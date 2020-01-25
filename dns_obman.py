@@ -19,6 +19,7 @@ def process_packet(packet):
             del scapy_packet[scapy.UDP].len
 
             packet.set_payload(str(scapy_packet))
+            print(scapy_packet.show())
 
     packet.accept()
 
