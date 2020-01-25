@@ -44,6 +44,6 @@ current_mac = get_mac (args.interface)
 if current_mac == args.new_mac:
     print("[+] Succesfully changed MAC to " + current_mac)
 else:
-    print("[-] Error when changing MAC")
+    print("[-] Error changing MAC")
 
 
